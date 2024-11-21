@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Chat</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+    <div class="container py-5">
+        <h1 class="text-center mb-4">Test Chat per Waapi</h1>
+
+        <!-- Numero di telefono -->
+        <div class="mb-4">
+            <label for="phone_number" class="form-label">Numero di telefono</label>
+            <input type="text" id="phone_number" class="form-control" placeholder="Inserisci numero di telefono">
+        </div>
+
+        <!-- Chat -->
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                Chat
+            </div>
+            <div class="card-body" id="chat">
+                <!-- Messaggi -->
+            </div>
+            <div class="card-footer">
+                <div class="input-group">
+                    <input type="text" id="message_content" class="form-control" placeholder="Scrivi un messaggio...">
+                    <button id="send_message" class="btn btn-primary">Invia</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("send_message").addEventListener("click", () => {
+            const phoneNumber = document.getElementById("phone_number").value;
+            const messageContent = document.getElementById("message_content").value;
+            const chat = document.getElementById("chat");
+
+            if (!phoneNumber || !messageContent) {
+                alert("Numero di telefono e messaggio sono obbligatori!");
+                return;
+            }
+
+            // Aggiungi il messaggio al log della chat
+            const messageElement = document.createElement("div");
+            messageElement.classList.add("mb-2");
+            messageElement.innerHTML = `<strong>Tu:</strong> ${messageContent}`;
+            chat.appendChild(messageElement);
+
+            // Invia i dati al server
+            fetch("/test/test_chat", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/x-www-form-urlencoded",
+                },
+                body: new URLSearchParams({
+                    phone_number: phoneNumber,
+                    message_content: messageContent,
+                }),
+            })
+                .then((response) => response.json())
+                .then((data) => {
+                    const responseElement = document.createElement("div");
+                    responseElement.classList.add("mb-2", "text-success");
+                    responseElement.innerHTML = `<strong>Risposta:</strong> ${data.message || "Successo"}`;
+                    chat.appendChild(responseElement);
+                })
+                .catch((error) => {
+                    const errorElement = document.createElement("div");
+                    errorElement.classList.add("mb-2", "text-danger");
+                    errorElement.innerHTML = `<strong>Errore:</strong> ${error}`;
+                    chat.appendChild(errorElement);
+                });
+
+            // Pulisci il campo messaggio
+            document.getElementById("message_content").value = "";
+        });
+    </script>
+</body>
+</html>
