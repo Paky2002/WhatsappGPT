@@ -15,7 +15,6 @@ class GPTAssistantExecutor :
         if cls._instance is None:
             cls._instance = super(GPTAssistantExecutor, cls).__new__(cls)
             # Read configuration from .env
-            print("VAR IS ", os.getenv("OPEN_AI_API_KEY"))
             cls._instance.openAI = OpenAI(api_key=os.getenv("OPEN_AI_API_KEY"))
             cls._instance.assistantId = os.getenv("OPEN_AI_GPT_ASSISTANT_ID")
             return cls._instance

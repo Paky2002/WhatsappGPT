@@ -76,41 +76,10 @@ def webhook():
                 except Exception as e:
                     current_app.logger.error(f"Errore nell'aggiornamento del thread: {e}")
                     return jsonify({"success": False, "error": str(e)}), 500
-
-            if current_app.waapi_queue.has_run_id (message_sender_phone_number) : 
-                while current_app.waapi_queue.has_run_id(message_sender_phone_number):
-                    sleep(2)  # Dormi per 1 secondo prima di verificare di nuovo
-
-            message_obj = current_app.gpt_assistant_executor.create_message(thread_id, message_content)
-            run_obj = current_app.gpt_assistant_executor.create_run(thread_id)
-            
-            print(run_obj.id, "  ->  ", message_obj.content)
-            
-            current_app.waapi_queue.push(message_sender_phone_number, run_obj.id)
-
-            try:
                 
-                messages = current_app.gpt_assistant_executor.run(
-                    thread_id,
-                    run_obj.id
-                )
+            current_app.waapi_queue.add_message(message_sender_phone_number, message_content, message_created_at, thread_id)
 
-                # Estrai l'ultimo messaggio di risposta
-                if messages.data:
-                    last_message = messages.data[0]
-                    last_message_content = (
-                        last_message.content[0].text.value if last_message.content else "No content"
-                    )
-                else:
-                    last_message_content = "No messages available"
-
-                current_app.waapi_queue.remove_run_id(message_sender_phone_number, run_obj.id)
-            except Exception as e:
-                current_app.waapi_queue.remove_run_id(message_sender_phone_number, run_obj.id)
-                current_app.logger.error(f"Errore nell'interazione con GPT: {e}")
-                return jsonify({"success": False, "error": str(e)}), 500
-
-            return send_message(last_message_content, message_sender_phone_number)
+            return jsonify({"status": "success", "message": "Thread disattivato"}), 200
 
     return jsonify({"success": False, "error": "Invalid event type or data"}), 400
 
