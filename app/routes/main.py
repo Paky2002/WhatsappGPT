@@ -33,7 +33,7 @@ def webhook():
         # Verifica che il tipo di messaggio sia 'chat'
         if message_data.get('type') == 'chat':
             message_sender_id = message_data.get('from')
-            message_created_at = message_data.get('timestamp') * 1000  # converti da secondi a millisecondi
+            message_created_at = message_data.get('timestamp')
             message_content = message_data.get('body')
 
             # Estrai il numero di telefono dal mittente

@@ -1,14 +1,16 @@
 from flask import Blueprint, render_template, request, jsonify
 import requests
+import time
 
 # Crea un blueprint per le rotte di test
 test_bp = Blueprint("test", __name__)
 
 @test_bp.route("/test_chat", methods=["GET", "POST"])
 def test_chat():
-    if request.method == "POST":
 
-        print ("MI E ARRIVATO UN MESSAGGIO")
+    current_timestamp = int(time.time())
+
+    if request.method == "POST":
 
         # Ottieni i dati dal form
         phone_number = request.form.get("phone_number")
@@ -50,7 +52,7 @@ def test_chat():
                     },
                     "body": message_content,
                     "type": "chat",
-                    "timestamp": 1669994807,
+                    "timestamp": current_timestamp,
                     "from": f"{phone_number}@c.us",
                     "to": "50611223355@c.us",
                     "deviceType": "ios",

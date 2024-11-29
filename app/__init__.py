@@ -26,7 +26,7 @@ def create_app():
     # Instanzia GPTAssistantExecutor e salvalo su app
     app.gpt_assistant_executor = GPTAssistantExecutor()
 
-    app.waapi_queue = WaapiQueue()
+    app.waapi_queue = WaapiQueue(db.session)
 
     # Registra le route
     from routes import register_routes
@@ -57,9 +57,11 @@ def configure_logging(app):
 
 def configure_admin(app):
     from models.threads import Thread  # Importa il modello Thread
+    from models.messages import Message  # Importa il modello Thread
 
     # Crea un'istanza di Flask-Admin
     admin = Admin(app, name="Admin Panel", template_mode="bootstrap4")
 
     # Aggiungi il modello Thread al pannello di amministrazione
     admin.add_view(ModelView(Thread, db.session))
+    admin.add_view(ModelView(Message, db.session))
